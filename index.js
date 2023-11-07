@@ -71,10 +71,9 @@ async function run() {
     })
 
     app.put('/products/:id', async (req, res) => {
-      const id = req.params.id
+      const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
       const option = { upsert: true }
-
       const updatedFood = req.body
       const food = {
         $set: {
