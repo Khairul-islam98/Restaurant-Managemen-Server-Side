@@ -29,13 +29,14 @@ async function run() {
     await client.connect();
 
     const productsCollection = client.db("restaurantManagementDB").collection("products");
+    const ordersCollection = client.db("restaurantManagementDB").collection("orders");
 
     app.get("/products", async (req, res) => {
       const page = parseInt(req.query.page)
       const size = parseInt(req.query.size)
       let quary = {}
-      if (req.query?.email, req.query?.buyerEmail) {
-        quary = { email: req.query.email, buyerEmail: req.query?.buyerEmail }
+      if (req.query?.email) {
+        quary = { email: req.query.email }
       }
       const result = await productsCollection.find(quary)
         .skip(page * size)
@@ -101,6 +102,24 @@ async function run() {
       const result = await productsCollection.updateOne(filter, food, option)
       res.send(result);
     })
+    app.get("/orders", async (req, res) => {
+      let quary = {}
+      if (req.query?.buyerEmail) {
+        quary = { buyerEmail: req.query.buyerEmail }
+      }
+      const result = await ordersCollection.find(quary).toArray();
+      res.send(result);
+    });
+    app.post("/orders", async (req, res) => {
+      const food = req.body;
+      const result = await ordersCollection.insertOne(food)
+      res.send(result)
+    });
+    app.delete("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await ordersCollection.deleteOne({ _id: new ObjectId(id) });
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
