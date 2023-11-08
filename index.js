@@ -160,8 +160,8 @@ async function run() {
       const food = {
         $set: {
           quantity: updatedFood.quantity
-        }
       }
+    }
       const result = await productsCollection.updateOne(filter, food, option)
       res.send(result);
     })
