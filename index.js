@@ -9,7 +9,7 @@ const port = process.env.PORT || 5001
 
 // middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: ['http://localhost:5173', 'https://restaurant-management-1c99f.web.app', 'https://restaurant-management-1c99f.firebaseapp.com'],
   credentials: true
 }));
 app.use(express.json());
@@ -113,7 +113,7 @@ async function run() {
       res.send(result)
     })
 
-    app.put('/products/:id', logger, verifyToken, async (req, res) => {
+    app.put('/products/:id',  async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
 
@@ -165,7 +165,7 @@ async function run() {
       const result = await productsCollection.updateOne(filter, food, option)
       res.send(result);
     })
-    app.get("/orders", logger, verifyToken,  async (req, res) => {
+    app.get("/orders", async (req, res) => {
       let quary = {}
       if (req.query?.buyerEmail) {
         quary = { buyerEmail: req.query.buyerEmail }
@@ -173,13 +173,13 @@ async function run() {
       const result = await ordersCollection.find(quary).toArray();
       res.send(result);
     });
-    app.post("/orders", logger, verifyToken, async (req, res) => {
+    app.post("/orders",  async (req, res) => {
       const food = req.body;
       const result = await ordersCollection.insertOne(food)
       res.send(result)
     });
 
-    
+
 
     app.delete("/orders/:id", async (req, res) => {
       const id = req.params.id;
