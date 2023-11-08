@@ -200,7 +200,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Hello from Restaurant Management!')
+  res.send('Hello  Restaurant Management server!')
 });
 
 app.listen(port, () => {
