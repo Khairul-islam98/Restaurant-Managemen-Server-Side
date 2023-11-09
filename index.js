@@ -71,7 +71,11 @@ async function run() {
 
     app.post('/logout', async (req, res) => {
       const user = req.body
-      res.clearCookie('token', { maxAge: 0}).send({ success: true })
+      res.clearCookie('token', {
+         maxAge: 0,
+         secure: process.env.Node_ENV === 'production' ? true : false,
+         sameSite: process.env.Node_ENV === 'production' ? 'none' : 'strict'
+        }).send({ success: true })
     })
 
     app.get("/products", async (req, res) => {
