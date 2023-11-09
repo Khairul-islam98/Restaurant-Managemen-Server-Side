@@ -9,7 +9,10 @@ const port = process.env.PORT || 5001
 
 // middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://restaurant-management-1c99f.web.app', 'https://restaurant-management-1c99f.firebaseapp.com'],
+  origin: [
+    'http://localhost:5173',
+    'https://restaurant-management-1c99f.web.app',
+    'https://restaurant-management-1c99f.firebaseapp.com'],
   credentials: true
 }));
 app.use(express.json());
@@ -56,26 +59,27 @@ async function run() {
     const productsCollection = client.db("restaurantManagementDB").collection("products");
     const ordersCollection = client.db("restaurantManagementDB").collection("orders");
 
-    app.post('/jwt', async (req, res) => {
+    app.post('/jwt', logger, async (req, res) => {
       const user = req.body
       console.log(user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-      res
-        .cookie('token', token, {
-          httpOnly: true,
-          secure: process.env.Node_ENV === 'production' ? true : false,
-          sameSite: process.env.Node_ENV === 'production' ? 'none' : 'strict'
-        })
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        maxAge: 60 * 60 * 1000
+      })
         .send({ success: true })
     })
 
     app.post('/logout', async (req, res) => {
       const user = req.body
       res.clearCookie('token', {
-         maxAge: 0,
-         secure: process.env.Node_ENV === 'production' ? true : false,
-         sameSite: process.env.Node_ENV === 'production' ? 'none' : 'strict'
-        }).send({ success: true })
+        maxAge: 0,
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        maxAge: 60 * 60 * 1000
+      }).send({ success: true })
     })
 
     app.get("/products", async (req, res) => {
@@ -117,7 +121,7 @@ async function run() {
       res.send(result)
     })
 
-    app.put('/products/:id',  async (req, res) => {
+    app.put('/products/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
 
@@ -164,8 +168,8 @@ async function run() {
       const food = {
         $set: {
           quantity: updatedFood.quantity
+        }
       }
-    }
       const result = await productsCollection.updateOne(filter, food, option)
       res.send(result);
     })
@@ -177,7 +181,7 @@ async function run() {
       const result = await ordersCollection.find(quary).toArray();
       res.send(result);
     });
-    app.post("/orders",  async (req, res) => {
+    app.post("/orders", async (req, res) => {
       const food = req.body;
       const result = await ordersCollection.insertOne(food)
       res.send(result)
