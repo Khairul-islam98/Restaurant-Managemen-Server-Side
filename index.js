@@ -56,7 +56,7 @@ async function run() {
     const productsCollection = client.db("restaurantManagementDB").collection("products");
     const ordersCollection = client.db("restaurantManagementDB").collection("orders");
 
-    app.post('/jwt', logger, async (req, res) => {
+    app.post('/jwt', async (req, res) => {
       const user = req.body
       console.log(user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
